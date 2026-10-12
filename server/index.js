@@ -5,7 +5,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 
 const PORT = process.env.PORT || 3001;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5174';
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 const MAX_USERS = 10;
 const app = express();
 app.use(cors({ origin: CLIENT_ORIGIN }));

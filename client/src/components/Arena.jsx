@@ -4,16 +4,19 @@ import VideoPlayer from './VideoPlayer.jsx';
 import Seats from './Seats.jsx';
 import Chat from './Chat.jsx';
 import './Arena.css';
+import MovieSelection from './MovieSelection';
 
 export default function Arena({ profile, initialRoom, onLeave, onLogout }) {
   const [code] = useState(initialRoom.code);
   const [users, setUsers] = useState(initialRoom.users);
   const [hostId, setHostId] = useState(initialRoom.hostId);
   const [video, setVideo] = useState(initialRoom.video);
-  const [url, setUrl] = useState('');
+  /*const [url, setUrl] = useState('');*/
+  const [picking, setPicking] = useState(false); // host chose "Change movie"
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
   const isHost = hostId === profile.id;
+  const showPicker = isHost && (!video || picking);
 
   useEffect(() => {
     const onRoom = (r) => { setUsers(r.users); setHostId(r.hostId); };
@@ -29,10 +32,18 @@ export default function Arena({ profile, initialRoom, onLeave, onLogout }) {
     return () => { socket.off('room:update', onRoom); socket.off('video:update', onVideo); socket.io.off('reconnect', onReconnect); };
   }, []);
 
-  async function setVideoUrl(e) {
+  /*async function setVideoUrl(e) {
     e.preventDefault();
     const res = await request('video:set', { url });
     setError(res.error || ''); if (!res.error) setUrl('');
+  }*/
+  
+  // Called by MovieSelection when the host picks a movie. We play its trailer.
+  async function handleSelectMovie(movie) {
+    if (!movie.trailerKey) return setError('No trailer available for this movie. Pick another.');
+    const res = await request('video:set', { url: `https://www.youtube.com/watch?v=${movie.trailerKey}` });
+    setError(res.error || '');
+    if (!res.error) setPicking(false);
   }
   const leave = () => { socket.emit('room:leave'); onLeave(); };
   const logout = () => { socket.emit('room:leave'); onLogout(); };
@@ -51,14 +62,30 @@ export default function Arena({ profile, initialRoom, onLeave, onLogout }) {
       </header>
       <div className="stage">
         <section className="main">
-          <VideoPlayer video={video} isHost={isHost} />
+          {/*<VideoPlayer video={video} isHost={isHost} />
           {isHost && (
             <form className="video-form" onSubmit={setVideoUrl}>
               <input placeholder="YouTube link" value={url} onChange={(e) => setUrl(e.target.value)} />
               <button className="btn primary">Set Video</button>
             </form>
-          )}
+          )}*/}
           {error && <p className="error">{error}</p>}
+          
+          {/* Hidden, not unmounted, so the host's player keeps its place while browsing */}
+          <div style={{ display: showPicker ? 'none' : 'block' }}>
+            <VideoPlayer video={video} isHost={isHost} />
+          </div>
+          {showPicker && (
+            <div className="picker">
+              <MovieSelection onSelectMovie={handleSelectMovie} />
+            </div>
+          )}
+          {isHost && video && (
+            <button className="btn secondary" onClick={() => setPicking((p) => !p)}>
+              {picking ? 'Back to video' : 'Change movie'}
+            </button>
+          )}
+          {error && <p className="toast">{error}</p>}
           <Seats users={users} hostId={hostId} myId={profile.id} />
         </section>
         <Chat initial={initialRoom.chat} />

@@ -11,11 +11,11 @@ export default function Login({ onLogin }) {
   return (
     <main className="center-screen">
       <form className="panel" onSubmit={submit}>
-        <h1 className="wordmark">ARENA</h1>
+        <h1 className="wordmark">Cinema Paradiso</h1>
         <input placeholder="Display name" maxLength={30} value={name} onChange={(e) => setName(e.target.value)} />
         <input placeholder="Username or email" value={contact} onChange={(e) => setContact(e.target.value)} />
         {error && <p className="error">{error}</p>}
-        <button className="btn primary">Enter Arena</button>
+        <button className="btn primary">Enter Cinema Paradiso</button>
         <p className="note">Local prototype profile, stored only in this browser. Not secure authentication; no password is used.</p>
       </form>
     </main>

@@ -37,14 +37,14 @@ export default function Arena({ profile, initialRoom, onLeave, onLogout }) {
   const leave = () => { socket.emit('room:leave'); onLeave(); };
   const logout = () => { socket.emit('room:leave'); onLogout(); };
   const copyInvite = () => {
-    navigator.clipboard.writeText(`Join me in ARENA. Room code: ${code}`);
+    navigator.clipboard.writeText(`Join me in Cinema Paradiso. Room code: ${code}`);
     setCopied(true); setTimeout(() => setCopied(false), 1500);
   };
 
   return (
     <div className="arena">
       <header className="topbar">
-        <span className="wordmark small">ARENA</span>
+        <span className="wordmark small">Cinema Paradiso</span>
         <span>Room <b className="gold">{code}</b> <button className="link" onClick={copyInvite}>{copied ? 'Copied' : 'Copy invitation'}</button></span>
         <span>{users.length}/10 present</span>
         <span><button className="link" onClick={leave}>Leave Room</button> <button className="link" onClick={logout}>Log out</button></span>

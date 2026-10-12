@@ -10,7 +10,7 @@ export default function Lobby({ profile, onEnter, onLogout }) {
   return (
     <main className="center-screen">
       <div className="panel">
-        <h1 className="wordmark">ARENA</h1>
+        <h1 className="wordmark">Cinema Paradiso</h1>
         <button className="btn primary" onClick={() => go('room:create')}>Create Room</button>
         <input placeholder="Room code" maxLength={5} value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
         <button className="btn secondary" onClick={() => go('room:join', { code })}>Join Room</button>

@@ -15,6 +15,7 @@ export default function Arena({ profile, initialRoom, onLeave, onLogout }) {
   const [picking, setPicking] = useState(false); // host chose "Change movie"
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [offsets, setOffsets] = useState({}); // userId -> seconds ahead (+) or behind (-) the host
   const isHost = hostId === profile.id;
   const showPicker = isHost && (!video || picking);
 
@@ -26,10 +27,15 @@ export default function Arena({ profile, initialRoom, onLeave, onLogout }) {
       const res = await request('room:join', { code, userId: profile.id, name: profile.name });
       if (res.error) onLeave(); else { setUsers(res.room.users); setHostId(res.room.hostId); setVideo(res.room.video); }
     };
+    const onOffsets = (o) => setOffsets(o);
+    socket.on('sync:offsets', onOffsets);
+    
     socket.on('room:update', onRoom);
     socket.on('video:update', onVideo);
     socket.io.on('reconnect', onReconnect);
-    return () => { socket.off('room:update', onRoom); socket.off('video:update', onVideo); socket.io.off('reconnect', onReconnect); };
+    return () => { socket.off('room:update', onRoom); socket.off('video:update', onVideo); socket.io.off('reconnect', onReconnect); socket.off('sync:offsets', onOffsets);};
+
+    
   }, []);
 
   /*async function setVideoUrl(e) {
@@ -86,7 +92,7 @@ export default function Arena({ profile, initialRoom, onLeave, onLogout }) {
             </button>
           )}
           {error && <p className="toast">{error}</p>}
-          <Seats users={users} hostId={hostId} myId={profile.id} />
+          <Seats users={users} hostId={hostId} myId={profile.id} offsets={offsets} />
         </section>
         <Chat initial={initialRoom.chat} />
       </div>

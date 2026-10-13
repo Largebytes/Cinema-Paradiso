@@ -19,3 +19,6 @@
 .picker { max-height: 70vh; overflow-y: auto; border: 1px solid #453237; }
 .toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #271C20; border: 1px solid #D76A70; color: #D76A70; padding: 8px 14px; margin: 0; z-index: 2000; }
 @media (max-width: 800px) { .stage { grid-template-columns: 1fr; } .seats { grid-template-columns: repeat(5, 1fr); } .seat { font-size: .6rem; } }
+.seat { background: #1B1517; border: 1px solid #1B1517; min-height: 52px; border-radius: 22px 22px 4px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: .75rem; padding: 4px 6px; overflow: hidden; }
+.seat-name { max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.seat-sync { color: #D6B779; font-size: .65rem; }

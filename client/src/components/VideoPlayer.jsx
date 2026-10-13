@@ -4,12 +4,24 @@ import { socket } from '../socket.js';
 // Loads the YouTube IFrame API script once and resolves when it is ready.
 let apiPromise;
 function loadYouTubeApi() {
-  if (!apiPromise) apiPromise = new Promise((resolve) => {
+  /*if (!apiPromise) apiPromise = new Promise((resolve) => {
     window.onYouTubeIframeAPIReady = () => resolve(window.YT);
     const s = document.createElement('script');
     s.src = 'https://www.youtube.com/iframe_api';
     document.head.appendChild(s);
-  });
+  });*/
+  if (window.YT && window.YT.Player) return Promise.resolve(window.YT);
+  if (!apiPromise) {
+    apiPromise = new Promise((resolve) => {
+      const previous = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => { previous?.(); resolve(window.YT); };
+      if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+        const s = document.createElement('script');
+        s.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(s);
+      }
+    });
+  }
   return apiPromise;
 }
 
@@ -34,7 +46,7 @@ export default function VideoPlayer({ video, isHost }) {
   }
 
   useEffect(() => {
-    let alive = true, timer;
+    let alive = true, timer, positionTimer;
     loadYouTubeApi().then((YT) => {
       if (!alive) return;
       const sendState = () => {
@@ -53,9 +65,16 @@ export default function VideoPlayer({ video, isHost }) {
           onError: () => setError('This video cannot be embedded or played. Try another one.'),
         },
       });
-      timer = setInterval(sendState, 3000); // heartbeat lets guests correct drift
+      // Guests tell the server where their player is, so seats can show the offset.
+      const sendPosition = () => {
+        const p = player.current;
+        if (isHost || !p?.getCurrentTime) return;
+        socket.emit('video:position', { time: p.getCurrentTime() });
+      };
+      timer = setInterval(sendState, 3000);           // host heartbeat stays at 3s
+      positionTimer = setInterval(sendPosition, 1000); // guests report every 1s
     });
-    return () => { alive = false; clearInterval(timer); player.current?.destroy?.(); player.current = null; };
+    return () => { alive = false; clearInterval(timer); player.current?.destroy?.(); player.current = null;clearInterval(positionTimer); };
   }, [isHost]);
 
   // Guests follow every update from the server.

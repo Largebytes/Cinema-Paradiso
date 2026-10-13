@@ -51,8 +51,10 @@ function removeUser(socket) {
   const user = room.users.get(userId);
   if (user && user.socketId === socket.id) { // ignore if the same user already reconnected on a new socket
     room.users.delete(userId);
+    delete room.offsets[userId];
     if (room.users.size === 0) { rooms.delete(code); return; } // empty rooms are deleted
     if (room.hostId === userId) room.hostId = room.users.keys().next().value; // oldest member becomes host
+    delete room.offsets[room.hostId];
     sendRoom(code);
   }
   socket.leave(code);
@@ -78,7 +80,7 @@ io.on('connection', (socket) => {
     userId = cleanId(userId); name = cleanName(name);
     if (!userId || !name) return reply({ error: 'Invalid profile.' });
     const code = makeRoomCode();
-    const room = { hostId: userId, users: new Map(), video: null, chat: [] };
+    const room = { hostId: userId, users: new Map(), video: null, chat: [], offsets: {} };
     rooms.set(code, room);
     reply({ room: enterRoom(socket, room, code, userId, name) });
   });
@@ -107,6 +109,8 @@ io.on('connection', (socket) => {
     const id = parseYouTubeId(url);
     if (!id) return reply({ error: 'Not a valid YouTube link.' });
     room.video = { id, playing: false, time: 0, at: Date.now() };
+    room.offsets = {}; // a new video starts everyone at zero
+    io.to(socket.data.code).emit('sync:offsets', {});
     io.to(socket.data.code).emit('video:update', { id, playing: false, time: 0 });
     reply({});
   });
@@ -117,6 +121,18 @@ io.on('connection', (socket) => {
     if (!room || !room.video || typeof time !== 'number') return;
     room.video = { ...room.video, playing: !!playing, time, at: Date.now() };
     socket.to(socket.data.code).emit('video:update', { id: room.video.id, playing: !!playing, time });
+  });
+
+  // Guests report their position; positive offset = ahead of the host, negative = behind.
+  socket.on('video:position', ({ time }) => {
+    const room = rooms.get(socket.data.code);
+    const v = room?.video;
+    if (!room || !v || typeof time !== 'number' || socket.data.userId === room.hostId) return;
+    const hostNow = v.time + (v.playing ? (Date.now() - v.at) / 1000 : 0);
+    const next = Math.round((time - hostNow) * 10) / 10; // one decimal is plenty
+    if (room.offsets[socket.data.userId] === next) return; // nothing changed, don't broadcast
+    room.offsets[socket.data.userId] = next;
+    io.to(socket.data.code).emit('sync:offsets', room.offsets);
   });
 
   socket.on('chat:send', (text) => {

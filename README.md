@@ -6,7 +6,7 @@
 
 Cinema Paradiso is a real-time watch-party platform that brings the experience of watching movies with friends into a shared digital space. Create a room, invite your friends, discover movies, and experience every moment together, wherever you are.
 
-**🌐 Live Website:** [Visit Cinema Paradiso](https://cinema-paradiso-lake.vercel.app/)
+**🌐 Live Website:** <a href="https://cinema-paradiso-lake.vercel.app" target="_blank" rel="noopener noreferrer">Visit Cinema Paradiso</a>
 
 ---
 

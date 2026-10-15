@@ -16,7 +16,7 @@ export default function Login({ onLogin }) {
         <input placeholder="Username or email" value={contact} onChange={(e) => setContact(e.target.value)} />
         {error && <p className="error">{error}</p>}
         <button className="btn primary">Enter Cinema Paradiso</button>
-        <p style="text-align: justify;">Directed by curiosity. Produced by Aswath.</p>
+        <p>Directed by curiosity. Produced by Aswath.</p>
       </form>
     </main>
   );

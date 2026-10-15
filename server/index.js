@@ -49,6 +49,18 @@ const io = new Server(httpServer, {
 
 // code -> { hostId, users: Map(userId -> {id, name, socketId}), video: {id, playing, time, at} | null, chat: [] }
 const rooms = new Map();
+// ---------- Audience reactions ----------
+const REACTION_TYPES = ['tomato', 'popper'];
+const REACTION_COOLDOWN_MS = 10000;    // one reaction per user every 10 seconds
+const ROOM_REACTION_LIMIT = 10;        // at most 10 reactions per room...
+const ROOM_REACTION_WINDOW_MS = 10000; // ...in any 10 second window
+const lastReactionByUser = new Map();  // userId -> time of last reaction
+
+// Forget old entries once a minute so this Map never grows forever.
+setInterval(() => {
+  const cutoff = Date.now() - REACTION_COOLDOWN_MS;
+  for (const [userId, time] of lastReactionByUser) if (time < cutoff) lastReactionByUser.delete(userId);
+}, 60000);
 
 function makeRoomCode() {
   const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no look-alike characters
@@ -168,6 +180,32 @@ io.on('connection', (socket) => {
     if (room.offsets[socket.data.userId] === next) return; // nothing changed, don't broadcast
     room.offsets[socket.data.userId] = next;
     io.to(socket.data.code).emit('sync:offsets', room.offsets);
+  });
+
+  socket.on('reaction:send', (data, reply) => {
+    if (typeof reply !== 'function') return;
+    const room = rooms.get(socket.data.code);
+    const userId = socket.data.userId;
+    if (!room || !room.users.has(userId)) return reply({ error: 'Join a room first.' });
+    if (!REACTION_TYPES.includes(data?.type)) return reply({ error: 'Unknown reaction.' });
+
+    // Per-user cooldown, checked on the server so clicking fast can't skip it.
+    const now = Date.now();
+    const waitMs = REACTION_COOLDOWN_MS - (now - (lastReactionByUser.get(userId) || 0));
+    if (waitMs > 0) return reply({ error: 'Please wait.', wait: waitMs / 1000 });
+
+    // Room-wide limit, so a group cannot flood the screen.
+    room.reactionTimes = (room.reactionTimes || []).filter((t) => now - t < ROOM_REACTION_WINDOW_MS);
+    if (room.reactionTimes.length >= ROOM_REACTION_LIMIT) return reply({ error: 'The room is busy. Try again soon.', wait: 3 });
+
+    lastReactionByUser.set(userId, now);
+    room.reactionTimes.push(now);
+
+    // The server picks where the tomato lands so everyone sees the same spot.
+    const x = Math.round(15 + Math.random() * 70);
+    const y = Math.round(20 + Math.random() * 55);
+    io.to(socket.data.code).emit('reaction:show', { type: data.type, x, y }); // only this room
+    reply({});
   });
 
   socket.on('chat:send', (text) => {

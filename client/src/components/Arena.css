@@ -28,3 +28,36 @@
 .emoji-panel { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; background: #271C20; border: 1px solid #453237; padding: 6px; margin-bottom: 8px; }
 .emoji-btn { background: none; border: 0; font-size: 1.2rem; cursor: pointer; padding: 4px; border-radius: 3px; }
 .emoji-btn:hover { background: #332329; }
+/* ---------- Audience reactions: buttons ---------- */
+.reactions { margin-top: 8px; }
+.reactions-buttons { display: flex; gap: 6px; }
+.reaction-btn { flex: 1; min-height: 40px; background: #271C20; color: #F5EFE6; border: 1px solid #453237; border-radius: 3px; font: inherit; font-size: .8rem; cursor: pointer; }
+.reaction-btn:hover:not(:disabled) { border-color: #D6B779; color: #F0D9A0; }
+.reaction-btn:disabled { color: #796E6D; cursor: not-allowed; }
+.reaction-error { color: #D76A70; font-size: .75rem; margin: 4px 0 0; }
+
+/* ---------- Audience reactions: layer on top of the screen ---------- */
+.reaction-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 5; }
+
+/* ---------- Tomato ---------- */
+.tomato-fly { position: absolute; left: var(--target-x); top: 100%; font-size: 2rem; transform: translate(-50%, -50%); animation: tomato-fly .7s ease-in both; }
+@keyframes tomato-fly {
+  from { top: 100%; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  to   { top: var(--target-y); transform: translate(-50%, -50%) scale(.6) rotate(540deg); }
+}
+.tomato-splat { position: absolute; left: var(--target-x); top: var(--target-y); width: 90px; height: 90px; background: #B3261E; border-radius: 50% 42% 55% 45%;
+  box-shadow: 40px -24px 0 -22px #B3261E, -42px 20px 0 -24px #B3261E, 10px 46px 0 -26px #B3261E;
+  transform: translate(-50%, -50%) scale(0); opacity: 0; animation: tomato-splat 2.6s .7s ease-out both; }
+@keyframes tomato-splat {
+  0%   { transform: translate(-50%, -50%) scale(.2); opacity: 0; }
+  8%   { transform: translate(-50%, -50%) scale(1);  opacity: .95; }
+  80%  { transform: translate(-50%, -44%) scale(1.05); opacity: .9; }
+  100% { transform: translate(-50%, -38%) scale(1.05); opacity: 0; }
+}
+
+/* ---------- Paper popper ---------- */
+.paper-piece { position: absolute; top: -10%; left: var(--left); width: var(--size); height: calc(var(--size) * 1.6); background: var(--color); animation: paper-fall var(--duration) var(--delay) ease-in both; }
+@keyframes paper-fall {
+  from { top: -10%; transform: translateX(0) rotate(var(--rotation)); opacity: 1; }
+  to   { top: 110%; transform: translateX(var(--drift)) rotate(calc(var(--rotation) + 720deg)); opacity: .9; }
+}

@@ -31,6 +31,7 @@ export default function Chat({ initial }) {
 }*/
 import { useEffect, useRef, useState } from 'react';
 import { socket } from '../socket.js';
+import AudienceReactions from './AudienceReactions.jsx';
 
 // Emojis shown in the picker. Add or remove any you like.
 const EMOJIS = ['😀', '😂', '😍', '😮', '😢', '😡', '👍', '👎', '👏', '🙌', '🔥', '❤️', '🎬', '🍿', '😴', '🤔', '🎉', '💀'];
@@ -87,6 +88,7 @@ export default function Chat({ initial }) {
         <button type="button" className="emoji-toggle" onClick={() => setPickerOpen((o) => !o)} aria-label="Choose emoji">☺</button>
         <input ref={inputRef} placeholder="Message" maxLength={300} value={text} onChange={(e) => setText(e.target.value)} />
       </form>
+      <AudienceReactions />
     </aside>
   );
 }

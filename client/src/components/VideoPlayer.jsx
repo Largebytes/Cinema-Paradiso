@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { socket } from '../socket.js';
+import ReactionLayer from './ReactionLayer.jsx';
 
 // Loads the YouTube IFrame API script once and resolves when it is ready.
 let apiPromise;
@@ -87,6 +88,7 @@ export default function VideoPlayer({ video, isHost }) {
 
   return (
     <div className="screen">
+      <ReactionLayer />
       <div ref={holder} />
       {!video && <p className="screen-empty">{isHost ? 'Paste a YouTube link to begin' : 'Waiting for the host to choose a video'}</p>}
       {error && <p className="screen-error">{error}</p>}

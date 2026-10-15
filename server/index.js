@@ -1,17 +1,17 @@
-// ARENA server: Express + Socket.IO. All room state lives in the `rooms` Map (lost on restart).
-import express from 'express';
+/*import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 
 const PORT = process.env.PORT || 3001;
 const app = express();
+const httpServer = createServer(app);
 /*const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 const MAX_USERS = 10;
 
 app.use(cors({ origin: CLIENT_ORIGIN }));
-const httpServer = createServer(app);
-const io = new Server(httpServer, { cors: { origin: CLIENT_ORIGIN } });*/
+
+const io = new Server(httpServer, { cors: { origin: CLIENT_ORIGIN } });
 const allowedOrigins = [
     'http://localhost:5173',
     'https://cinema-paradiso-lake.vercel.app'
@@ -20,6 +20,28 @@ const allowedOrigins = [
 app.use(cors({ origin: allowedOrigins }));
 
 const httpServer = createServer(app);
+
+const io = new Server(httpServer, {
+    cors: { origin: allowedOrigins }
+});*/
+// ARENA server: Express + Socket.IO. All room state lives in the `rooms` Map (lost on restart).
+import express from 'express';
+import cors from 'cors';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+
+const PORT = process.env.PORT || 3001;
+const MAX_USERS = 10;
+
+const app = express();
+const httpServer = createServer(app);
+
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://cinema-paradiso-lake.vercel.app'
+];
+
+app.use(cors({ origin: allowedOrigins }));
 
 const io = new Server(httpServer, {
     cors: { origin: allowedOrigins }

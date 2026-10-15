@@ -38,7 +38,7 @@ const httpServer = createServer(app);
 
 const allowedOrigins = [
     'http://localhost:5173',
-    'https://cinema-paradiso-lake.vercel.app'
+    'https://cinema-paradiso-git-new-features-justme-4244.vercel.app/'
 ];
 
 app.use(cors({ origin: allowedOrigins }));

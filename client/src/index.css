@@ -13,5 +13,5 @@ input:focus { outline: none; border-color: #D6B779; }
 .link { background: none; border: 0; color: #B7AAA5; cursor: pointer; font: inherit; padding: 0 6px; }
 .link:hover { color: #F0D9A0; }
 .error { color: #D76A70; margin: 0; font-size: .9rem; }
-.note { color: #796E6D; font-size: .8rem; margin: 0; text-align: center;}
+.panel .note { color: #796E6D; font-size: .8rem; margin: 0; text-align: center; width: 100%; }
 .gold { color: #D6B779; }

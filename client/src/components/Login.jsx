@@ -16,7 +16,7 @@ export default function Login({ onLogin }) {
         <input placeholder="Username or email" value={contact} onChange={(e) => setContact(e.target.value)} />
         {error && <p className="error">{error}</p>}
         <button className="btn primary">Enter Cinema Paradiso</button>
-        <p className="note">Local prototype profile, stored only in this browser. Not secure authentication; no password is used.</p>
+        
       </form>
     </main>
   );

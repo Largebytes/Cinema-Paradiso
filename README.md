@@ -28,6 +28,7 @@ By bringing synchronized playback, real-time conversations, and movie discovery 
 - **🪑 Interactive Theatre:** See who's watching with you through participant names and a seating-inspired interface.
 - **🎬 Movie Discovery:** Explore movie posters and information powered by TMDB.
 - **⏱️ Playback Sync Indicator:** See whether participants are slightly ahead of or behind the host.
+- **🍅 Tomato & 🎉 Popper Attacks:** — Throw tomatoes at your friends' terrible movie choices, or celebrate their rare moments of cinematic intelligence. 🎬
 - **😀 Emoji Picker:** Express reactions and add personality to conversations.
 - **🌙 Cinematic Design:** A theatre-inspired interface built around atmosphere, deep colours, and the feeling of a shared screening.
 
